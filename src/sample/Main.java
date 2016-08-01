@@ -22,13 +22,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Set;
+
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import redis.clients.jedis.Jedis;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        //Set Up
+
+        Jedis jedis = JedisMaker.make();
+        JedisIndex index = new JedisIndex(jedis);
+
 
         //First Screen
         primaryStage.setTitle("Thomas the Search Engine");
@@ -50,9 +59,13 @@ public class Main extends Application {
         grid.add(imageView, 0, 1);
 
         TextField userTextField = new TextField();
-        userTextField.setPromptText("Search");
+        userTextField.setPromptText("Search Here");
         GridPane.setConstraints(userTextField, 0, 2);
         grid.getChildren().add(userTextField);
+
+        ObservableList<String> urlList = FXCollections.observableArrayList();
+        ListView<String> viewUrlList = new ListView<String>(urlList);
+
 
 
         //Second Screen
@@ -68,9 +81,11 @@ public class Main extends Application {
         hbox.getChildren().addAll(text1, searchBar);
         borderPane.setTop(hbox);
 
-        ObservableList<String> urlList = FXCollections.observableArrayList();
-        ListView<String> viewUrlList = new ListView<String>(urlList);
         borderPane.setCenter(viewUrlList);
+
+//        ObservableList<String> urlList1 = FXCollections.observableArrayList();
+//        ListView<String> viewUrlList1 = new ListView<String>(urlList1);
+//        borderPane.setCenter(viewUrlList1);
 
         //Buttons
 
@@ -80,6 +95,11 @@ public class Main extends Application {
             @Override
             public void handle(javafx.event.ActionEvent event) {
                 primaryStage.setScene(new Scene(borderPane, 800, 500));
+                String term = userTextField.getText();
+                WikiSearch search = WikiSearch.search(term, index);
+                Set<String> urls = search.getKeys();
+                urlList.clear();
+                urlList.addAll(urls);
             }
         });
         grid.getChildren().add(submit);
