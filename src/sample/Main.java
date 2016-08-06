@@ -10,21 +10,25 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.control.TextField;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Map.Entry;
+import java.util.HashSet;
 import java.util.Set;
+import javafx.scene.control.Hyperlink;
+import java.util.LinkedList;
 
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import redis.clients.jedis.Jedis;
 
@@ -37,6 +41,9 @@ public class Main extends Application {
 
         Jedis jedis = JedisMaker.make();
         JedisIndex index = new JedisIndex(jedis);
+        LinkedList<Hyperlink> realUrls = new LinkedList<Hyperlink>();
+        WebView browser = new WebView();
+        WebEngine webEngine = browser.getEngine();
 
 
         //First Screen
@@ -63,13 +70,14 @@ public class Main extends Application {
         GridPane.setConstraints(userTextField, 0, 2);
         grid.getChildren().add(userTextField);
 
-        ObservableList<String> urlList = FXCollections.observableArrayList();
-        ListView<String> viewUrlList = new ListView<String>(urlList);
+        ObservableList<Hyperlink> urlList = FXCollections.observableArrayList();
+        ListView<Hyperlink> viewUrlList = new ListView<Hyperlink>(urlList);
 
 
 
         //Second Screen
         BorderPane borderPane = new BorderPane();
+        Scene scene2 = new Scene(borderPane, 800, 800);
 
         Text text1 = new Text("new page");
         text1.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
@@ -83,9 +91,12 @@ public class Main extends Application {
 
         borderPane.setCenter(viewUrlList);
 
-//        ObservableList<String> urlList1 = FXCollections.observableArrayList();
-//        ListView<String> viewUrlList1 = new ListView<String>(urlList1);
-//        borderPane.setCenter(viewUrlList1);
+        //Third Screen
+        VBox browserScreen = new VBox();
+        Scene scene3 = new Scene(browserScreen);
+        HBox backButton = new HBox();
+
+
 
         //Buttons
 
@@ -94,17 +105,71 @@ public class Main extends Application {
         submit.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
             public void handle(javafx.event.ActionEvent event) {
-                primaryStage.setScene(new Scene(borderPane, 800, 500));
+                primaryStage.setScene(scene2);
                 String term = userTextField.getText();
                 WikiSearch search = WikiSearch.search(term, index);
                 Set<String> urls = search.getKeys();
+                realUrls.clear();
+                for(String url:urls) {
+                    Hyperlink link = new Hyperlink(url);
+                    link.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+                        @Override
+                        public void handle(javafx.event.ActionEvent event) {
+                            webEngine.load(url);
+                            backButton.getChildren().clear();
+                            backButton.getChildren().addAll(userTextField, submit);
+                            browserScreen.getChildren().clear();
+                            browserScreen.getChildren().addAll(backButton, browser);
+                            primaryStage.setScene(scene3);
+                        }
+                    });
+                    realUrls.add(link);
+                }
+
+
                 urlList.clear();
-                urlList.addAll(urls);
+                urlList.addAll(realUrls);
             }
         });
         grid.getChildren().add(submit);
 
-        Scene scene = new Scene(grid, 800,500);
+        Button submit2 = new Button("Submit");
+        hbox.getChildren().add(submit2);
+        submit2.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+            @Override
+            public void handle(javafx.event.ActionEvent event) {
+                String term = searchBar.getText();
+                WikiSearch search = WikiSearch.search(term, index);
+                LinkedList<Entry<String,Integer>> sorted = (LinkedList) search.sort();
+                LinkedList<String> urls = new LinkedList<String>();
+                for(Entry entry:sorted) {
+                    urls.add(0,(String)entry.getKey());
+                }
+                realUrls.clear();
+                for(String url:urls) {
+                    Hyperlink link = new Hyperlink(url);
+                    link.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
+                        @Override
+                        public void handle(javafx.event.ActionEvent event) {
+                            webEngine.load(url);
+                            backButton.getChildren().clear();
+                            backButton.getChildren().addAll(searchBar,submit);
+                            browserScreen.getChildren().clear();
+                            browserScreen.getChildren().addAll(backButton, browser);
+                            primaryStage.setScene(scene3);
+                        }
+                    });
+                    realUrls.add(link);
+                }
+                urlList.clear();
+                urlList.addAll(realUrls);
+            }
+        });
+        borderPane.setTop(hbox);
+
+        Scene scene = new Scene(grid, 800,800);
+        scene.getStylesheets().add
+                (Main.class.getResource("style.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
     }
