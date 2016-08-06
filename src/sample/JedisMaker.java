@@ -37,8 +37,8 @@ public class JedisMaker {
 		try {
 			System.out.println(fileURL.getFile());
 			br = new BufferedReader(new FileReader
-					("C:\\Users\\Erica\\Documents\\CodeU Final " +
-							"Project\\CodeU-Final-Project\\out\\production" +
+					("C:\\Users\\7296837\\Documents\\CodeU" +
+							"\\CodeU-Final-Project\\out\\production" +
 							"\\CodeU\\resources\\redis_url.txt"));
 		} catch (FileNotFoundException e1) {
 			System.out.println("File not found: " + filename);
