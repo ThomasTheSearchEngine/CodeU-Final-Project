@@ -17,30 +17,17 @@ import org.jsoup.select.Elements;
  *
  */
 public class TermCounter {
-	
-	private Map<String, Integer> map;
+
+	private Map<String, Double> map;
 	private String label;
 	
 	public TermCounter(String label) {
 		this.label = label;
-		this.map = new HashMap<String, Integer>();
+		this.map = new HashMap<String, Double>();
 	}
 	
 	public String getLabel() {
 		return label;
-	}
-	
-	/**
-	 * Returns the total of all counts.
-	 * 
-	 * @return
-	 */
-	public int size() {
-		int total = 0;
-		for (Integer value: map.values()) {
-			total += value;
-		}
-		return total;
 	}
 
 	/**
@@ -52,6 +39,7 @@ public class TermCounter {
 		for (Node node: paragraphs) {
 			processTree(node);
 		}
+        tf();
 	}
 	
 	/**
@@ -100,9 +88,9 @@ public class TermCounter {
 	 * @param term
 	 * @param count
 	 */
-	public void put(String term, int count) {
-		map.put(term, count);
-	}
+    public void put(String term, double count) {
+        map.put(term, count);
+    }
 
 	/**
 	 * Returns the count associated with this term, or 0 if it is unseen.
@@ -110,10 +98,20 @@ public class TermCounter {
 	 * @param term
 	 * @return
 	 */
-	public Integer get(String term) {
-		Integer count = map.get(term);
-		return count == null ? 0 : count;
-	}
+    public Double get(String term) {
+        Double count = map.get(term);
+        return count == null ? 0 : count;
+    }
+
+    /**
+     * Print the terms and their counts in arbitrary order.
+     */
+    public void printTF() {
+        for (String key: keySet()) {
+            Double count = get(key);
+            System.out.println(key + ", " + count);
+        }
+    }
 
 	/**
 	 * Returns the set of terms that have been counted.
@@ -123,17 +121,27 @@ public class TermCounter {
 	public Set<String> keySet() {
 		return map.keySet();
 	}
-	
-	/**
-	 * Print the terms and their counts in arbitrary order.
-	 */
-	public void printCounts() {
-		for (String key: keySet()) {
-			Integer count = get(key);
-			System.out.println(key + ", " + count);
-		}
-		System.out.println("Total of all counts = " + size());
-	}
+
+    /**
+     * Calculates tf and puts in map
+     *
+     * @return
+     */
+    public void tf() {
+
+        double total = 0;
+        for (Double value: map.values()) {
+            total += value;
+        }
+        // System.out.println ( total );
+
+        for ( Map.Entry<String, Double> entry: map.entrySet() ) {
+            // System.out.println( entry );
+            //System.out.println( entry.getValue()/total );
+
+            put( entry.getKey(), entry.getValue()/total );
+        }
+    }
 
 	/**
 	 * @param args
@@ -147,6 +155,6 @@ public class TermCounter {
 		
 		TermCounter counter = new TermCounter(url.toString());
 		counter.processElements(paragraphs);
-		counter.printCounts();
+		counter.printTF();
 	}
 }
