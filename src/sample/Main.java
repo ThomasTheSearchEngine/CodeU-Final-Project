@@ -108,7 +108,11 @@ public class Main extends Application {
                 primaryStage.setScene(scene2);
                 String term = userTextField.getText();
                 WikiSearch search = WikiSearch.search(term, index);
-                Set<String> urls = search.getKeys();
+                LinkedList<Entry<String,Integer>> sorted = (LinkedList) search.sort();
+                LinkedList<String> urls = new LinkedList<String>();
+                for(Entry entry:sorted) {
+                    urls.add(0,(String)entry.getKey());
+                }
                 realUrls.clear();
                 for(String url:urls) {
                     Hyperlink link = new Hyperlink(url);
