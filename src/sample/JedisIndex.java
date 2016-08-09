@@ -96,7 +96,7 @@ public class JedisIndex {
         Integer urlsSize = urls.size();
 
         if ( urlsSize != 0 ) {
-            idf = Math.log(termCounterKeys().size() / urlsSize);
+            idf = Math.log( (double) termCounterKeys().size() / urlsSize);
         }
 
 		for (String url: urls) {
@@ -121,10 +121,16 @@ public class JedisIndex {
 
         Double idf = 0.0;
         Integer urlsSize = urls.size();
+        // System.out.println ( "urlsize: " + urlsSize );
+        // System.out.println ( "termcounterkeys: " + termCounterKeys().size() );
 
         if ( urlsSize != 0 ) {
-            idf = Math.log(termCounterKeys().size() / urlsSize);
+            idf = Math.log( (double) termCounterKeys().size() / urlsSize);
         }
+
+        //System.out.println ( (double) termCounterKeys().size()/urlsSize );
+
+        // System.out.println ( "idf: " + idf );
 
 		// construct a transaction to perform all lookups
 		Transaction t = jedis.multi();
@@ -140,7 +146,9 @@ public class JedisIndex {
         for (String url: urls) {
             // System.out.println(url);
             Double count = new Double((String) res.get(i++) );
+            System.out.println ( url + " " + count );
             count *= idf;
+            // System.out.println( url + count );
             map.put(url, count);
         }
         return map;
@@ -320,12 +328,12 @@ public class JedisIndex {
 		Jedis jedis = JedisMaker.make();
 		JedisIndex index = new JedisIndex(jedis);
 		
-		//index.deleteTermCounters();
-		//index.deleteURLSets();
-		//index.deleteAllKeys();
+		index.deleteTermCounters();
+		index.deleteURLSets();
+		index.deleteAllKeys();
 		loadIndex(index);
 
-        Map<String, Double> map = index.getCountsFaster("the");
+        Map<String, Double> map = index.getCountsFaster("java");
         for (Entry<String, Double> entry: map.entrySet()) {
             System.out.println(entry);
         }
@@ -341,11 +349,11 @@ public class JedisIndex {
 		WikiFetcher wf = new WikiFetcher();
 
 		String url = "https://en.wikipedia.org/wiki/Java_(programming_language)";
-		Elements paragraphs = wf.readWikipedia(url);
+		Elements paragraphs = wf.fetchWikipedia(url);
 		index.indexPage(url, paragraphs);
 		
-		url = "https://en.wikipedia.org/wiki/Programming_language";
-		paragraphs = wf.readWikipedia(url);
+		url = "https://en.wikipedia.org/wiki/Java_(software_platform)";
+		paragraphs = wf.fetchWikipedia(url);
 		index.indexPage(url, paragraphs);
 	}
 }
