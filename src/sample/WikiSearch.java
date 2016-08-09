@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import redis.clients.jedis.Jedis;
@@ -56,6 +57,7 @@ public class WikiSearch {
 	public Set<String> getKeys() {
 		return map.keySet();
 	}
+
 
 	/**
 	 * Computes the union of two search results.
@@ -149,9 +151,54 @@ public class WikiSearch {
 	 * @param index
 	 * @return
 	 */
+	public static WikiSearch searchAnd(String term, JedisIndex index) {
+		WikiSearch wiki_term;
+		WikiSearch answer = null;
+		String[] words = term.split(" ");
+		for(int i = 0; i < words.length; i++) {
+			wiki_term = new WikiSearch(index.getCountsFaster(words[i]));
+			if(i == 0) {
+				answer = wiki_term;
+			} else {
+				answer = answer.and(wiki_term);
+			}
+
+		}
+		return answer;
+	}
+
 	public static WikiSearch search(String term, JedisIndex index) {
-		Map<String, Double> map = index.getCountsFaster(term);
-		return new WikiSearch(map);
+		StringBuffer searchTerm = new StringBuffer();
+		String[] words = term.split(" ");
+		LinkedList<String> termsToOr = new LinkedList<>();
+		WikiSearch answer;
+
+		for(String word:words) {
+			if(word.equals("or")) {
+				termsToOr.add(searchTerm.substring(0,searchTerm.length()-1));
+				searchTerm.delete(0,searchTerm.length());
+			} else {
+				searchTerm.append(word + " ");
+			}
+		}
+		termsToOr.add(searchTerm.substring(0,searchTerm.length()-1));
+		answer = multipleOr(termsToOr,index);
+
+		return answer;
+	}
+
+	public static WikiSearch multipleOr(LinkedList<String> words, JedisIndex index) {
+			WikiSearch wiki_term;
+			WikiSearch answer = null;
+			for(int i = 0; i < words.size(); i++) {
+				wiki_term = searchAnd(words.get(i),index);
+				if(i == 0) {
+					answer = wiki_term;
+				} else {
+					answer = answer.or(wiki_term);
+				}
+			}
+			return answer;
 	}
 
 	public static void main(String[] args) throws IOException {

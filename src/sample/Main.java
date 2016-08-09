@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.control.Hyperlink;
 import java.util.LinkedList;
-
+import java.util.Arrays;
 import javafx.scene.layout.HBox;
 import redis.clients.jedis.Jedis;
 
@@ -41,7 +41,7 @@ public class Main extends Application {
 
         Jedis jedis = JedisMaker.make();
         JedisIndex index = new JedisIndex(jedis);
-        LinkedList<Hyperlink> realUrls = new LinkedList<Hyperlink>();
+        LinkedList<VBox> realUrls = new LinkedList<VBox>();
         WebView browser = new WebView();
         WebEngine webEngine = browser.getEngine();
 
@@ -54,24 +54,20 @@ public class Main extends Application {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Text sceneTitle = new Text("Thomas the Search Engine");
-        sceneTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        grid.add(sceneTitle, 0, 0, 2, 1);
-
-        Image image = new Image(getClass().getResourceAsStream("train.png"));
+        Image image = new Image(getClass().getResourceAsStream("logo.png"));
         ImageView imageView = new ImageView();
         imageView.setImage(image);
         imageView.setFitWidth(300);
         imageView.setPreserveRatio(true);
-        grid.add(imageView, 0, 1);
+        grid.add(imageView, 0, 0);
 
         TextField userTextField = new TextField();
         userTextField.setPromptText("Search Here");
-        GridPane.setConstraints(userTextField, 0, 2);
+        GridPane.setConstraints(userTextField, 0, 1);
         grid.getChildren().add(userTextField);
 
-        ObservableList<Hyperlink> urlList = FXCollections.observableArrayList();
-        ListView<Hyperlink> viewUrlList = new ListView<Hyperlink>(urlList);
+        ObservableList<VBox> urlList = FXCollections.observableArrayList();
+        ListView<VBox> viewUrlList = new ListView<VBox>(urlList);
 
 
 
@@ -79,14 +75,17 @@ public class Main extends Application {
         BorderPane borderPane = new BorderPane();
         Scene scene2 = new Scene(borderPane, 800, 800);
 
-        Text text1 = new Text("new page");
-        text1.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        Image image1 = new Image(getClass().getResourceAsStream("logo.png"));
+        ImageView imageView1 = new ImageView();
+        imageView1.setImage(image);
+        imageView1.setFitWidth(100);
+        imageView1.setPreserveRatio(true);
 
         TextField searchBar = new TextField();
         searchBar.setPromptText("Search");
 
         HBox hbox = new HBox();
-        hbox.getChildren().addAll(text1, searchBar);
+        hbox.getChildren().addAll(imageView1, searchBar);
         borderPane.setTop(hbox);
 
         borderPane.setCenter(viewUrlList);
@@ -101,7 +100,7 @@ public class Main extends Application {
         //Buttons
 
         Button submit = new Button("Submit");
-        GridPane.setConstraints(submit, 1,2);
+        GridPane.setConstraints(submit, 1,1);
         submit.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
             public void handle(javafx.event.ActionEvent event) {
@@ -115,19 +114,24 @@ public class Main extends Application {
                 }
                 realUrls.clear();
                 for(String url:urls) {
-                    Hyperlink link = new Hyperlink(url);
+                    VBox vbox = new VBox();
+                    Text label = new Text(url);
+                    String realUrl = url.substring(30).replace("_"," ");
+                    Hyperlink link = new Hyperlink(realUrl);
+                    vbox.getChildren().add(link);
+                    vbox.getChildren().add(label);
                     link.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
                         @Override
                         public void handle(javafx.event.ActionEvent event) {
                             webEngine.load(url);
                             backButton.getChildren().clear();
-                            backButton.getChildren().addAll(userTextField, submit);
+                            backButton.getChildren().addAll(imageView1,userTextField, submit);
                             browserScreen.getChildren().clear();
                             browserScreen.getChildren().addAll(backButton, browser);
                             primaryStage.setScene(scene3);
                         }
                     });
-                    realUrls.add(link);
+                    realUrls.add(vbox);
                 }
 
 
@@ -151,19 +155,24 @@ public class Main extends Application {
                 }
                 realUrls.clear();
                 for(String url:urls) {
-                    Hyperlink link = new Hyperlink(url);
+                    VBox vbox = new VBox();
+                    Text label = new Text(url);
+                    String realUrl = url.substring(30).replace("_"," ");
+                    Hyperlink link = new Hyperlink(realUrl);
+                    vbox.getChildren().add(link);
+                    vbox.getChildren().add(label);
                     link.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
                         @Override
                         public void handle(javafx.event.ActionEvent event) {
                             webEngine.load(url);
                             backButton.getChildren().clear();
-                            backButton.getChildren().addAll(searchBar,submit);
+                            backButton.getChildren().addAll(imageView1, searchBar,submit);
                             browserScreen.getChildren().clear();
                             browserScreen.getChildren().addAll(backButton, browser);
                             primaryStage.setScene(scene3);
                         }
                     });
-                    realUrls.add(link);
+                    realUrls.add(vbox);
                 }
                 urlList.clear();
                 urlList.addAll(realUrls);
