@@ -123,7 +123,7 @@ public class JedisIndex {
         Integer urlsSize = urls.size();
 
         if ( urlsSize != 0 ) {
-            idf = Math.log(termCounterKeys().size() / urlsSize);
+            idf = Math.log((double)termCounterKeys().size() / urlsSize);
         }
 
 		// construct a transaction to perform all lookups
