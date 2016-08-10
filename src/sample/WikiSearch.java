@@ -151,7 +151,7 @@ public class WikiSearch {
 	 * @param index
 	 * @return
 	 */
-	public static WikiSearch searchAnd(String term, JedisIndex index) {
+	public static WikiSearch searchAnd(String term, SerializableIndex index) {
 		WikiSearch wiki_term;
 		WikiSearch answer = null;
 		String[] words = term.split(" ");
@@ -167,7 +167,7 @@ public class WikiSearch {
 		return answer;
 	}
 
-	public static WikiSearch search(String term, JedisIndex index) {
+	public static WikiSearch search(String term, SerializableIndex index) {
 		StringBuffer searchTerm = new StringBuffer();
 		String[] words = term.split(" ");
 		LinkedList<String> termsToOr = new LinkedList<>();
@@ -187,7 +187,7 @@ public class WikiSearch {
 		return answer;
 	}
 
-	public static WikiSearch multipleOr(LinkedList<String> words, JedisIndex index) {
+	public static WikiSearch multipleOr(LinkedList<String> words, SerializableIndex index) {
 			WikiSearch wiki_term;
 			WikiSearch answer = null;
 			for(int i = 0; i < words.size(); i++) {
@@ -205,7 +205,7 @@ public class WikiSearch {
 		
 		// make a JedisIndex
 		Jedis jedis = JedisMaker.make();
-		JedisIndex index = new JedisIndex(jedis); 
+		SerializableIndex index = new SerializableIndex();
 		
 		// search for the first term
 		String term1 = "java";

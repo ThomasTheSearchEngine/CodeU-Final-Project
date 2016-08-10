@@ -1,6 +1,8 @@
 package sample;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +18,7 @@ import org.jsoup.select.Elements;
  * @author downey
  *
  */
-public class TermCounter {
+public class TermCounter implements Serializable{
 
 	private Map<String, Double> map;
 	private String label;
@@ -145,6 +147,20 @@ public class TermCounter {
             // put( entry.getKey(), entry.getValue()/max );
         }
     }
+
+    private void writeObject(java.io.ObjectOutput out) throws IOException {
+    	out.writeObject(label);
+		out.writeObject(map);
+	}
+
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		label = (String)in.readObject();
+		map = (HashMap<String, Double>)in.readObject();
+	}
+
+	private void readOBjectNoData() throws ObjectStreamException {
+
+	}
 
 	/**
 	 * @param args
