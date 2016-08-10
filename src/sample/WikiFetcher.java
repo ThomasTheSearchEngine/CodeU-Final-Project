@@ -38,6 +38,7 @@ public class WikiFetcher {
 		return paras;
 	}
 
+
 	/**
 	 * Reads the contents of a Wikipedia page from src/resources.
 	 *

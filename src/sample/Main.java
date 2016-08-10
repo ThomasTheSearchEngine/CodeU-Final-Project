@@ -39,9 +39,12 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
         //Set Up
-
+        SerializableDescriptions des = new SerializableDescriptions();
         SerializableIndex index = new SerializableIndex();
+        des.deserialize();
+        System.out.println("TO PROVE ITS NOT NULL " + des.toString());
         index.deserialize();
+        System.out.println("INDEX ");
         LinkedList<VBox> realUrls = new LinkedList<VBox>();
         WebView browser = new WebView();
         WebEngine webEngine = browser.getEngine();
@@ -116,11 +119,19 @@ public class Main extends Application {
                 realUrls.clear();
                 for(String url:urls) {
                     VBox vbox = new VBox();
-                    Text label = new Text(url);
+                    //Text label = new Text(url);
+                    String sentence = des.get(url);
+                    String sent;
+                    if(sentence.length() != 0) {
+                        sent = sentence.substring(0,100) + "...";
+                    } else {
+                        sent = "No information can be shown at this time";
+                    }
+                    Text realSent = new Text(sent);
                     String realUrl = url.substring(30).replace("_"," ");
                     Hyperlink link = new Hyperlink(realUrl);
                     vbox.getChildren().add(link);
-                    vbox.getChildren().add(label);
+                    vbox.getChildren().add(realSent);
                     link.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
                         @Override
                         public void handle(javafx.event.ActionEvent event) {
@@ -157,11 +168,18 @@ public class Main extends Application {
                 realUrls.clear();
                 for(String url:urls) {
                     VBox vbox = new VBox();
-                    Text label = new Text(url);
+                    String sentence = des.get(url);
+                    String sent;
+                    if(sentence.length() != 0) {
+                        sent = sentence.substring(0,100) + "...";
+                    } else {
+                        sent = "No information can be shown at this time";
+                    }
+                    Text realSent = new Text(sent);
                     String realUrl = url.substring(30).replace("_"," ");
                     Hyperlink link = new Hyperlink(realUrl);
                     vbox.getChildren().add(link);
-                    vbox.getChildren().add(label);
+                    vbox.getChildren().add(realSent);
                     link.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
                         @Override
                         public void handle(javafx.event.ActionEvent event) {

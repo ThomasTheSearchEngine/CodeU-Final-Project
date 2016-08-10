@@ -101,8 +101,9 @@ public class WikiCrawler {
     public static void main(String[] args) throws IOException {
 
         // make a WikiCrawler
-        Jedis jedis = JedisMaker.make();
+        //Jedis jedis = JedisMaker.make();
         SerializableIndex index = new SerializableIndex();
+        SerializableDescriptions des = new SerializableDescriptions();
         String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
         WikiCrawler wc = new WikiCrawler(source, index);
 
@@ -112,13 +113,16 @@ public class WikiCrawler {
 
         for(String link: wc.queue) {
             Elements paragraph = wf.fetchWikipedia(link);
+            des.extractSentence(paragraph,link);
             boolean a = index.indexPage(link, paragraph);
             if(!a) {
                 break;
             }
+
         }
 
         index.serialize();
+        des.serialize();
 
         // loop until we index a new page
 //        String res;

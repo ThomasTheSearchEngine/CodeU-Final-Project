@@ -26,7 +26,7 @@ public class SerializableIndex {
             index = (HashMap) ois.readObject();
             ois.close();
             fis.close();
-            System.out.println("Size of map is: " + index.size());
+            System.out.println("Size of map is: " + urlCounts);
             System.out.println("Deserialized HashMap..");
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -88,7 +88,7 @@ public class SerializableIndex {
                 add(key, answer);
             }
             urls.add(url);
-            return urls.size() < 500;
+            return urls.size() < 20;
         }
 
         public Set<String> getURLs(String term) {
