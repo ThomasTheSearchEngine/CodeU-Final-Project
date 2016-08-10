@@ -111,6 +111,7 @@ public class TermCounter {
             Double count = get(key);
             System.out.println(key + ", " + count);
         }
+        // System.out.println("java" + get("java"));
     }
 
 	/**
@@ -129,17 +130,19 @@ public class TermCounter {
      */
     public void tf() {
 
-        double total = 0;
+        double max = 0;
         for (Double value: map.values()) {
-            total += value;
+            if ( value > max )
+                max = value;
         }
         // System.out.println ( total );
 
         for ( Map.Entry<String, Double> entry: map.entrySet() ) {
             // System.out.println( entry );
-            //System.out.println( entry.getValue()/total );
+            // System.out.println( entry.getValue()/total );
 
-            put( entry.getKey(), entry.getValue()/total );
+            put( entry.getKey(), 0.4+(1-0.4)*entry.getValue()/max );
+            // put( entry.getKey(), entry.getValue()/max );
         }
     }
 
