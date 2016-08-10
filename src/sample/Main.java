@@ -54,7 +54,7 @@ public class Main extends Application {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Image image = new Image(getClass().getResourceAsStream("logo.png"));
+        Image image = new Image(getClass().getResourceAsStream("train.png"));
         ImageView imageView = new ImageView();
         imageView.setImage(image);
         imageView.setFitWidth(300);
@@ -75,7 +75,7 @@ public class Main extends Application {
         BorderPane borderPane = new BorderPane();
         Scene scene2 = new Scene(borderPane, 800, 800);
 
-        Image image1 = new Image(getClass().getResourceAsStream("logo.png"));
+        Image image1 = new Image(getClass().getResourceAsStream("train.png"));
         ImageView imageView1 = new ImageView();
         imageView1.setImage(image);
         imageView1.setFitWidth(100);

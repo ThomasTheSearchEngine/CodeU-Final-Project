@@ -26,7 +26,7 @@ public class JedisMaker {
 
 		// assemble the file name
 		String slash = File.separator;
-		String filename = "resources" + slash + "redis.txt";
+		String filename = "resources/redis_url.txt";
 		System.out.println(filename);
 		System.out.println(JedisMaker.class.getClassLoader().getResource
 				(filename));
@@ -39,6 +39,7 @@ public class JedisMaker {
 			br = new BufferedReader(new FileReader
 					(fileURL.getFile()));
 		} catch (FileNotFoundException e1) {
+			System.out.println(fileURL.toString());
 			System.out.println("File not found: " + filename);
 			printInstructions();
 			return null;
