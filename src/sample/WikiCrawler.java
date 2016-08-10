@@ -18,7 +18,7 @@ public class WikiCrawler {
     private final String source;
 
     // the index where the results go
-    private JedisIndex index;
+    private SerializableIndex index;
 
     // queue of URLs to be indexed
     private Queue<String> queue = new LinkedList<String>();
@@ -32,7 +32,7 @@ public class WikiCrawler {
      * @param source
      * @param index
      */
-    public WikiCrawler(String source, JedisIndex index) {
+    public WikiCrawler(String source, SerializableIndex index) {
         this.source = source;
         this.index = index;
         queue.offer(source);
@@ -102,7 +102,7 @@ public class WikiCrawler {
 
         // make a WikiCrawler
         Jedis jedis = JedisMaker.make();
-        JedisIndex index = new JedisIndex(jedis);
+        SerializableIndex index = new SerializableIndex();
         String source = "https://en.wikipedia.org/wiki/Java_(programming_language)";
         WikiCrawler wc = new WikiCrawler(source, index);
 
@@ -112,8 +112,13 @@ public class WikiCrawler {
 
         for(String link: wc.queue) {
             Elements paragraph = wf.fetchWikipedia(link);
-            index.indexPage(link, paragraph);
+            boolean a = index.indexPage(link, paragraph);
+            if(!a) {
+                break;
+            }
         }
+
+        index.serialize();
 
         // loop until we index a new page
 //        String res;

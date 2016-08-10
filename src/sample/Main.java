@@ -23,12 +23,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.FileInputStream;
+
 import javafx.scene.control.Hyperlink;
-import java.util.LinkedList;
-import java.util.Arrays;
 import javafx.scene.layout.HBox;
 import redis.clients.jedis.Jedis;
 
@@ -39,8 +40,8 @@ public class Main extends Application {
 
         //Set Up
 
-        Jedis jedis = JedisMaker.make();
-        JedisIndex index = new JedisIndex(jedis);
+        SerializableIndex index = new SerializableIndex();
+        index.deserialize();
         LinkedList<VBox> realUrls = new LinkedList<VBox>();
         WebView browser = new WebView();
         WebEngine webEngine = browser.getEngine();
@@ -191,4 +192,6 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+
 }

@@ -125,7 +125,11 @@ public class JedisIndex {
         // System.out.println ( "termcounterkeys: " + termCounterKeys().size() );
 
         if ( urlsSize != 0 ) {
+
+            idf = Math.log((double)termCounterKeys().size() / urlsSize);
+
             idf = Math.log( (double) termCounterKeys().size() / urlsSize);
+
         }
 
         //System.out.println ( (double) termCounterKeys().size()/urlsSize );
