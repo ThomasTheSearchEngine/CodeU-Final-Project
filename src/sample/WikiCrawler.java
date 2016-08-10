@@ -88,7 +88,8 @@ public class WikiCrawler {
                 if (node instanceof Element) {
                     String link = node.attr("href");
                     String answer = "https://en.wikipedia.org" + link;
-                    if (link != "" && link.indexOf('i',3) == 4) {
+                    if (link != "" && link.indexOf('i',3) == 4 && !link.contains("Wikipedia:") &&
+                            !link.contains("Talk:") && !link.contains("#") ) {
                         queue.add(answer);
                         System.out.println(answer);
                     }

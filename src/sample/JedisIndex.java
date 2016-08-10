@@ -150,7 +150,7 @@ public class JedisIndex {
         for (String url: urls) {
             // System.out.println(url);
             Double count = new Double((String) res.get(i++) );
-            System.out.println ( url + " " + count );
+            // System.out.println ( url + " " + count );
             count *= idf;
             // System.out.println( url + count );
             map.put(url, count);
